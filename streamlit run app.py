@@ -3,30 +3,29 @@ import openai
 
 st.title("GPT-4.1-mini 챗봇 웹앱")
 
-# API 키 입력란으로 세션 상태에 저장
-if "api_key" not in st.session_state:
-    st.session_state.api_key = ""
+# 1. API 키 입력 (비밀번호 형태)
+api_key = st.text_input("OpenAI API Key를 입력하세요:", type="password")
 
-api_key_input = st.text_input("OpenAI API Key를 입력하세요:", type="password", value=st.session_state.api_key)
-
-# 업데이트 세션 상태
-if api_key_input != st.session_state.api_key:
-    st.session_state.api_key = api_key_input
-
+# 2. 질문 입력
 question = st.text_input("질문을 입력하세요:")
 
+# 3. 요청 버튼
 if st.button("질문하기"):
-    if not st.session_state.api_key:
+    if not api_key:
         st.warning("API Key를 입력해주세요.")
     elif not question:
         st.warning("질문을 입력해주세요.")
     else:
         try:
-            openai.api_key = st.session_state.api_key
-            response = openai.ChatCompletion.create(
+            # API 키 세팅
+            openai.api_key = api_key
+            
+            # 최신 openai 라이브러리 호출 형식
+            response = openai.chat.completions.create(
                 model="gpt-4.1-mini",
                 messages=[{"role": "user", "content": question}]
             )
+            
             answer = response.choices[0].message.content
             st.success("응답:")
             st.write(answer)
